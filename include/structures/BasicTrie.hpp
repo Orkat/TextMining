@@ -17,6 +17,8 @@ class BasicTrie
     void print_words_frequencies( std::ostream& out );
 
     void serialise( const std::string& filename );
+    void load( const std::string& filename );
+
     unsigned int count_nodes( void );
 
   private:
@@ -25,16 +27,13 @@ class BasicTrie
     void print_words_aux( std::ostream& out, std::string buf );
     void print_words_frequencies_aux( std::ostream& out, std::string buf );
 
-    void set_address( unsigned int address, unsigned int n_bytes_per_node_value,
-                      unsigned int n_bytes_per_address, unsigned int n_bytes_per_frequency );
-    unsigned int set_address_aux( unsigned int address, unsigned int n_bytes_per_node_value,
-                                  unsigned int n_bytes_per_address, unsigned int n_bytes_per_frequency );
+    void set_address( unsigned int address );
+    unsigned int set_address_aux( unsigned int address );
 
-    void serialise_aux( std::ofstream& file, char value, unsigned int n_bytes_per_value,
-                        unsigned int n_bytes_per_address, unsigned int n_bytes_per_frequency );
+    void serialise_aux( std::ofstream& file, char value );
 
     std::map< char, BasicTrie* > children_;
-    
+
     unsigned int address_;
     unsigned int frequency_;
 
