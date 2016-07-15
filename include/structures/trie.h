@@ -1,0 +1,9 @@
+
+class Trie
+{
+
+  public:
+
+    Trie();
+
+};

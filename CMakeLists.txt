@@ -1,11 +1,13 @@
 cmake_minimum_required (VERSION 2.6)
 project (TextMining)
 
-
-#define PROJECT_SOURCE_DIR @src@
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O5 -c++14")
 
 include_directories ( include )
-file(GLOB SOURCES "src/*.cpp")
+add_subdirectory(src)
 
+add_executable(TextMiningApp src/TextMiningAppMain.cpp)
+add_executable(TextMiningCompiler src/TextMiningCompilerMain.cpp)
 
-add_executable(TextMining ${SOURCES})
+target_link_libraries (TextMiningApp TextMiningLib)
+target_link_libraries (TextMiningCompiler TextMiningLib)
