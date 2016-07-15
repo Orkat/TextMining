@@ -1,4 +1,6 @@
 words.txt
+words_list.txt
+words_frequencies.txt
 ref
 CMakeCache.txt
 cmake_install.cmake

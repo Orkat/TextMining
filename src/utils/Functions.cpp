@@ -1,4 +1,4 @@
-#include "utils/functions.hpp"
+#include "utils/Functions.hpp"
 
 unsigned int next_power_of_2( const unsigned int val )
 {
