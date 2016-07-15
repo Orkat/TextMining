@@ -14,8 +14,9 @@ int main(int argc, char** argv)
 
   for ( auto iter : words_container.word_frequency_map_ )
     trie.add_word( iter.first );
-    
-  trie.print( std::cout );
+
+  //trie.print( std::cout );
+  trie.serialise( cmd_line_args.path_to_dict_ );
 
   return 0;
 }
