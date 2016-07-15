@@ -12,17 +12,10 @@ int main(int argc, char** argv)
 
   BasicTrie trie;
 
-  /*
-  trie.add_word("test");
-  trie.add_word("team");
-  trie.print(std::cout);
-  */
-
   for ( auto iter : words_container.word_frequency_map_ )
-  {
-    trie.add_word(iter.first);
-    trie.print(std::cout);
-  }
+    trie.add_word( iter.first );
+    
+  trie.print( std::cout );
 
   return 0;
 }
