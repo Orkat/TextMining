@@ -1,1 +1,1 @@
-add_library(TextMiningLib structures/trie.cpp)
+add_library(TextMiningLib structures/BasicTrie.cpp)

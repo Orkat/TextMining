@@ -1,9 +1,0 @@
-
-class Trie
-{
-
-  public:
-
-    Trie();
-
-};
