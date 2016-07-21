@@ -15,7 +15,7 @@ class TestClass:
     OK = '\033[90m' 
     END = '\033[0m'
 
-    def __init__(self, categories):
+    def __init__(self, categories, gendict):
         self.categories = Generator.get_categories()
         self.words_path = join(dirname(dirname(abspath(__file__))), 'words.txt')
         self.ref_dict_path = join(dirname(dirname(abspath(__file__))), 'ref/Dict.bin')
@@ -27,7 +27,8 @@ class TestClass:
         self.out_path = join(dirname(abspath(__file__)), 'output')
         self.in_path = join(dirname(abspath(__file__)), 'input')
 
-        self.generate_dicts()
+        if gendict:
+            self.generate_dicts()
         self.test(categories)
 
     def generate_dicts(self):

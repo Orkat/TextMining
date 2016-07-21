@@ -16,7 +16,7 @@ def parse_args():
                         action='store_true')
     parser.add_argument("-c", "--categories", help='Test named categories', dest='cat', default=False,
                         action='store_true')
-    parser.add_argument("-d", "--gen_dict", help='Generate Apps Dicts', dest='dic', default=False,
+    parser.add_argument("-d", "--gen_dict", help='Generate Apps Dicts', dest='gdict', default=False,
                         action='store_true')
     parser.add_argument("-p", "--print_categories", help="Print the names of categories", dest='pcat', default=False,
                         action='store_true')
@@ -30,7 +30,7 @@ def parse_args():
         parser.print_help()
         exit(1)
     if args.gen: Generator(args.category, int(100))
-    TestClass(args.category)
+        TestClass(args.category, args.gdict)
 
 
 if __name__ == '__main__':

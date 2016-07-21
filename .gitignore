@@ -1,7 +1,6 @@
-words.txt
+ref/Dict.bin
 words_list.txt
 words_frequencies.txt
-ref
 CMakeCache.txt
 cmake_install.cmake
 build
