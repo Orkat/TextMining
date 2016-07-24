@@ -38,15 +38,15 @@ void BasicTrie::add_word( const std::string& word , unsigned int frequency )
   }
 }
 
+// root node is not written : need auxiliary function to distinguish
+// children of root node from other cases
 void BasicTrie::serialise( const std::string& filename )
 {
   set_address( 0 );
   std::ofstream file( filename , std::ios::out | std::ios::binary );
+  write_binary_unsigned_int( file, children_.size(), BASIC_TRIE_N_CHILDREN_SIZE );
   for ( auto iter : children_ )
-  {
-    write_binary_unsigned_int( file, children_.size(), BASIC_TRIE_N_CHILDREN_SIZE );
     iter.second->serialise_aux( file, iter.first );
-  }
   file.close();
 }
 
@@ -56,12 +56,10 @@ void BasicTrie::serialise_aux( std::ofstream& file , char value )
 
   write_binary_unsigned_int( file, address_, BASIC_TRIE_ADDRESS_SIZE );
   write_binary_unsigned_int( file, frequency_, BASIC_TRIE_FREQUENCY_SIZE );
+  write_binary_unsigned_int( file, children_.size(), BASIC_TRIE_N_CHILDREN_SIZE );
 
   for ( auto iter : children_ )
-  {
-    write_binary_unsigned_int( file, children_.size(), BASIC_TRIE_N_CHILDREN_SIZE );
     iter.second->serialise_aux( file, iter.first );
-  }
 }
 
 void BasicTrie::load( const std::string& filename )
