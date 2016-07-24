@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 BasicTrie::BasicTrie()
 {
@@ -64,7 +65,34 @@ void BasicTrie::serialise_aux( std::ofstream& file , char value )
 
 void BasicTrie::load( const std::string& filename )
 {
+  std::ifstream file( filename , std::ios::in | std::ios::binary );
 
+  unsigned int n_children = read_binary_unsigned_int( file, BASIC_TRIE_N_CHILDREN_SIZE );
+  auto children = std::vector<BasicTrie*>( n_children );
+  for ( unsigned int i = 0; i < n_children; ++i )
+  {
+    children[i] = new BasicTrie();
+    char value = children[i]->load_aux( file );
+    children_[value] = children[i];
+  }
+}
+
+char BasicTrie::load_aux( std::ifstream& file )
+{
+  file.read( &value_, BASIC_TRIE_VALUE_SIZE );
+
+  address_ = read_binary_unsigned_int( file, BASIC_TRIE_ADDRESS_SIZE );
+  frequency_ = read_binary_unsigned_int( file, BASIC_TRIE_FREQUENCY_SIZE );
+
+  unsigned int n_children = read_binary_unsigned_int( file, BASIC_TRIE_N_CHILDREN_SIZE );
+  auto children = std::vector<BasicTrie*>( n_children );
+  for ( unsigned int i = 0; i < n_children; ++i )
+  {
+    children[i] = new BasicTrie();
+    char value = children[i]->load_aux( file );
+    children_[value] = children[i];
+  }
+  return value_;
 }
 
 // root node is not written : need auxiliary function to distinguish

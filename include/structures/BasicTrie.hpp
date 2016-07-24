@@ -31,10 +31,12 @@ class BasicTrie
     unsigned int set_address_aux( unsigned int address );
 
     void serialise_aux( std::ofstream& file, char value );
+    char load_aux( std::ifstream& file );
 
     std::map< char, BasicTrie* > children_;
 
     unsigned int address_;
     unsigned int frequency_;
+    char value_;
 
 };
