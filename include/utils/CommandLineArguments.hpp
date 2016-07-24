@@ -8,6 +8,7 @@ class AppCommandLineArguments
     AppCommandLineArguments( int argc, char** argv );
 
     std::string path_to_dict_;
+    bool print_words_;
 
   private:
 
@@ -23,6 +24,7 @@ class CompilerCommandLineArguments
 
     std::string path_to_words_;
     std::string path_to_dict_;
+    bool print_words_;
 
   private:
 

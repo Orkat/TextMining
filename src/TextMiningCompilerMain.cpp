@@ -15,10 +15,10 @@ int main(int argc, char** argv)
   for ( auto iter : words_container.word_frequency_map_ )
     trie.add_word( iter.first, iter.second );
 
-  //trie.print_words_frequencies( std::cout );
-  //trie.print_words( std::cout );
-  //trie.print( std::cout );
   trie.serialise( cmd_line_args.path_to_dict_ );
+
+  if ( cmd_line_args.print_words_ )
+    trie.print_words( std::cout );
 
   return 0;
 }
