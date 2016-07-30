@@ -1,1 +1,1 @@
-add_library(TextMiningLib structures/BasicTrie.cpp utils/Functions.cpp)
+add_library(TextMiningLib structures/TrieBuilder.cpp utils/Functions.cpp)

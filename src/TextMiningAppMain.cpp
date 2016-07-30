@@ -1,19 +1,11 @@
-#include "utils/CommandLineArguments.hpp"
-#include "structures/BasicTrie.hpp"
-
-#include <iostream>
+#include "structures/TrieBuilder.hpp"
 
 
-int main(int argc, char** argv)
-{
-  AppCommandLineArguments cmd_line_args( argc, argv );
+int main(int argc, char** argv) {
 
-  BasicTrie trie;
-
-  trie.load( cmd_line_args.path_to_dict_ );
-
-  if ( cmd_line_args.print_words_ )
-    trie.print_words( std::cout );
-
+  Trie* trie = new Trie(argv[1]);
+  std::string s0("");
+  trie->printWords(s0);
   return 0;
+
 }

@@ -1,4 +1,4 @@
-#include "structures/BasicTrie.hpp"
+#include "structures/TrieBuilder.hpp"
 #include "utils/CommandLineArguments.hpp"
 #include "utils/WordsContainer.hpp"
 
@@ -10,15 +10,17 @@ int main(int argc, char** argv)
 
   WordsContainer words_container( cmd_line_args.path_to_words_ );
 
-  BasicTrie trie;
+  TrieBuilder trieRoot;
 
   for ( auto iter : words_container.word_frequency_map_ )
-    trie.add_word( iter.first, iter.second );
+    trieRoot.addWord( iter.first, iter.second );
 
-  trie.serialise( cmd_line_args.path_to_dict_ );
+  std::string s0 ("");
+  trieRoot.printWords(s0);
 
-  if ( cmd_line_args.print_words_ )
-    trie.print_words( std::cout );
+  // FIXME: Craving RAM and crappy implementation
+  //trieRoot.compress(s0, &trieRoot, false);
+  trieRoot.serialize( cmd_line_args.path_to_dict_ );
 
   return 0;
 }
