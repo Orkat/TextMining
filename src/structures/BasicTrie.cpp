@@ -130,6 +130,9 @@ void BasicTrie::load_mmap( const std::string& filename )
 {
   int fd = open( filename.c_str(), O_RDONLY );
   file_mmap = mmap(0, 10, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0 );
+
+  unsigned int n_children = read_binary_unsigned_int_void_ptr(file_mmap, 4);
+  std::cout << "n_children : " << n_children << std::endl;
   
 }
 

@@ -10,3 +10,5 @@ unsigned int get_unsigned_int_buffer( char* buffer, unsigned int n_bytes );
 void write_binary_unsigned_int( std::ofstream& file, unsigned int value, unsigned int n_bytes );
 
 unsigned int read_binary_unsigned_int( std::ifstream& file, unsigned int n_bytes );
+
+unsigned int read_binary_unsigned_int_void_ptr( void* ptr, unsigned int n_bytes );
