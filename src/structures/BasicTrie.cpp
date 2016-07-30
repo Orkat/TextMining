@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <fcntl.h>
 
 BasicTrie::BasicTrie()
 {
@@ -125,6 +126,12 @@ unsigned int BasicTrie::count_nodes( void )
   return n;
 }
 
+void BasicTrie::load_mmap( const std::string& filename )
+{
+  int fd = open( filename.c_str(), O_RDONLY );
+  file_mmap = mmap(0, 10, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0 );
+  
+}
 
 
 

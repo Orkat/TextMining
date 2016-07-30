@@ -2,6 +2,7 @@
 #include <map>
 #include <iostream>
 #include <fstream>
+#include <sys/mman.h>
 
 class BasicTrie
 {
@@ -18,6 +19,7 @@ class BasicTrie
 
     void serialise( const std::string& filename );
     void load( const std::string& filename );
+    void load_mmap( const std::string& filename );
 
     unsigned int count_nodes( void );
 
@@ -38,5 +40,7 @@ class BasicTrie
     unsigned int address_;
     unsigned int frequency_;
     char value_;
+
+    void* file_mmap;
 
 };
