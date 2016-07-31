@@ -8,3 +8,5 @@ build
 out.bin
 words_compiler.txt
 words_app.txt
+test/input/*
+test/output/*

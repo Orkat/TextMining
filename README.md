@@ -8,10 +8,15 @@ Questions:
 
 1. Décrivez les choix de design de votre programme
 
-
+   Nous avions au départ voulu faire un Patricia Trie pour ce projet. Or, nous nous sommes heurtés à des difficultés de structure, notamment en ce qui concerne la longueur des strings. Ainsi, nous sommes revenus sur une implémentation de Trie plus classique.
 
 2. Listez l’ensemble des tests effectués sur votre programme (en plus des units tests)
+
+
 3. Avez-vous détecté des cas où la correction par distance ne fonctionnait pas (même avec une distance élevée) ?
+
+   Non.
+
 4. Quelle est la structure de données que vous avez implémentée dans votre projet, pourquoi ?
 
    La structure de données utilisée est un compact trie. Les enfants d'un noeud

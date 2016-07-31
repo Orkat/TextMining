@@ -121,7 +121,7 @@ std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::g
 
   unsigned int length_diff = std::abs( (int)current_word.size() - (int)word.size() );
 
-  if ( current_distance_partial > distance + 1 )
+  if ( current_distance_partial > distance*2 )
     return ret;
 
 
