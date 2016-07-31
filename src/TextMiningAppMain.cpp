@@ -45,7 +45,7 @@ int main(int argc, char** argv)
   std::string str1 = "hello";
   auto dl_words = trie.get_dlwords( str1, 1 );
   for ( auto word : dl_words )
-    std::cout << word << std::endl;
+    std::cout << std::get<0>(word) << " " << std::get<1>(word) << " " << std::get<2>(word) << std::endl;
 
   return 0;
 }

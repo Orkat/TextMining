@@ -2,6 +2,7 @@
 #include <utility>
 #include <sys/mman.h>
 #include <vector>
+#include <tuple>
 
 struct CompactTrieNodeList;
 
@@ -30,7 +31,7 @@ class CompactTrie
     void load_mmap( const std::string& filename );
     void print_words( void );
     void print_words_mmap( void );
-    std::vector<std::string> get_dlwords( std::string word, unsigned int distance );
+    std::vector<std::tuple<std::string, unsigned int, unsigned int> > get_dlwords( std::string word, unsigned int distance );
 
   private:
 
@@ -43,7 +44,7 @@ class CompactTrie
     std::pair<bool, unsigned int> get_children_offset( const CompactTrieNode* current_node, const CompactTrieNode* node );
     void print_words_aux( const CompactTrieNode* node, std::string word );
     void print_words_mmap_aux( unsigned int offset, std::string word );
-    std::vector<std::string> get_dlwords_aux( unsigned int offset, std::string current_word, std::string word,
+    std::vector<std::tuple<std::string, unsigned int, unsigned int> > get_dlwords_aux( unsigned int offset, std::string current_word, std::string word,
                                               unsigned int distance );
 
 };

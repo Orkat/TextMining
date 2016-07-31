@@ -84,9 +84,9 @@ void CompactTrie::serialise_children_list( std::ofstream& file, const CompactTri
   }
 }
 
-std::vector<std::string> CompactTrie::get_dlwords(std::string word, unsigned int distance)
+std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::get_dlwords(std::string word, unsigned int distance)
 {
-  std::vector<std::string> ret;
+  std::vector<std::tuple<std::string, unsigned int, unsigned int> > ret;
   unsigned int n_children = read_binary_unsigned_int_void_ptr( file_mmap_, COMPACT_TRIE_N_CHILDREN_SIZE );
   unsigned int offset = COMPACT_TRIE_N_CHILDREN_SIZE;
   for ( unsigned int i = 0; i < n_children; ++i )
@@ -98,7 +98,7 @@ std::vector<std::string> CompactTrie::get_dlwords(std::string word, unsigned int
   return ret;
 }
 
-std::vector<std::string> CompactTrie::get_dlwords_aux( unsigned int offset, std::string current_word, std::string word, unsigned int distance )
+std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::get_dlwords_aux( unsigned int offset, std::string current_word, std::string word, unsigned int distance )
 {
   unsigned int value = read_binary_unsigned_int_void_ptr( offset_void_pointer(file_mmap_, offset), COMPACT_TRIE_VALUE_SIZE );
   offset += COMPACT_TRIE_VALUE_SIZE;
@@ -109,21 +109,23 @@ std::vector<std::string> CompactTrie::get_dlwords_aux( unsigned int offset, std:
   unsigned int n_children = read_binary_unsigned_int_void_ptr( offset_void_pointer(file_mmap_, offset), COMPACT_TRIE_N_CHILDREN_SIZE );
   offset += COMPACT_TRIE_N_CHILDREN_SIZE;
 
+  current_word += (char)value;
+
   unsigned int current_distance = damerau_levenshtein_distance(current_word.c_str(), word.c_str());
-  std::vector<std::string> ret;
+  std::vector<std::tuple<std::string, unsigned int, unsigned int> > ret;
 
   if ( n_children == 0 )
   {
     if ( current_distance <= distance )
-      ret.push_back( current_word );
+      ret.push_back( std::make_tuple( current_word, current_distance, frequency ) );
   }
   else
   {
     if ( frequency != 0 && current_distance <= distance )
-      ret.push_back( current_word );
+      ret.push_back( std::make_tuple( current_word, current_distance, frequency ) );
     for ( unsigned int i = 0; i < n_children; ++i )
     {
-      auto vect = get_dlwords_aux( children_offset + i*COMPACT_TRIE_NODE_SIZE, current_word + (char)value, word, distance );
+      auto vect = get_dlwords_aux( children_offset + i*COMPACT_TRIE_NODE_SIZE, current_word, word, distance );
       ret.insert(ret.end(), vect.begin(), vect.end());
     }
   }
