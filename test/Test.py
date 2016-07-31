@@ -66,17 +66,6 @@ class TestClass:
             bin_out_json = p2.communicate()[0]
             dev_null.close()
 
-            diff = difflib.ndiff(ref_out_json, bin_out_json)
-            #delta = ''.join(diff)
-            if diff is not None:
-                #print delta
-                print '\r' + '[' + str(index) + '] ' + TestClass.FAIL + "FAILED - Output Difference - " + TestClass.END + category
-            else:
-                if t4 - t3 > t2 - t1:
-                    print '\r' + '[' + str(index) + '] ' + TestClass.SUC + "SUCCESS - " + TestClass.END + category
-                else:
-                    print '\r' + '[' + str(index) + '] ' + TestClass.OK + "OK - Performance - " + TestClass.END + category
-
             outpath = join(self.out_path, category)
             if isfile(outpath + '_bin'):
                 remove(outpath + '_bin')
@@ -88,6 +77,18 @@ class TestClass:
             ref_out = open(join(self.out_path, category + '_ref'), 'w')
             ref_out.write(ref_out_json)
             ref_out.close()
+
+            p3 = Popen(["diff", join(self.out_path, category + '_ref'), join(self.out_path, category + '_bin')], stderr=PIPE, stdout=PIPE)
+            diff = p3.communicate()[0]
+
+            if diff:
+                #print delta
+                print '\r' + '[' + str(index) + '] ' + TestClass.FAIL + "FAILED - Output Difference - " + TestClass.END + category
+            else:
+                if t4 - t3 > t2 - t1:
+                    print '\r' + '[' + str(index) + '] ' + TestClass.SUC + "SUCCESS - " + TestClass.END + category
+                else:
+                    print '\r' + '[' + str(index) + '] ' + TestClass.OK + "OK - Performance - " + TestClass.END + category
 
             index += 1
 
