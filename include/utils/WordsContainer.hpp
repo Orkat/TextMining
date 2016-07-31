@@ -1,6 +1,10 @@
 #include <string>
 #include <map>
 
+/*
+  This class is a simple word container that loads the
+  entire list of words into memory before allowing access
+*/
 class WordsContainer
 {
 

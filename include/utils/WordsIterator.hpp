@@ -2,6 +2,12 @@
 #include <utility>
 #include <fstream>
 
+/*
+  This is an improved word container that allows
+  the user to iterate over the list of words in
+  a file without loading the entire file into
+  memory
+*/
 class WordsIterator
 {
 
