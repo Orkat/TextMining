@@ -55,11 +55,11 @@ unsigned int CompactTrie::serialise_aux( std::ofstream& file, const CompactTrieN
   CompactTrieNodeList* children = node->children_;
   while ( children != nullptr )
   {
-    current_offset = serialise_aux( file, children->node_, current_offset );
-
     file.seekp( children_offset + COMPACT_TRIE_VALUE_SIZE + COMPACT_TRIE_FREQUENCY_SIZE, std::ios::beg );
     write_binary_unsigned_int( file, current_offset, COMPACT_TRIE_CHILDREN_OFFSET_SIZE );
     file.seekp( current_offset, std::ios::beg );
+
+    current_offset = serialise_aux( file, children->node_, current_offset );
 
     children_offset += COMPACT_TRIE_NODE_SIZE;
     children = children->next_;
@@ -75,14 +75,74 @@ void CompactTrie::serialise_children_list( std::ofstream& file, const CompactTri
   {
     CompactTrieNode* node = children->node_;
 
-    file.write( &node->value_, COMPACT_TRIE_VALUE_SIZE );
+    write_binary_unsigned_int( file, node->value_, COMPACT_TRIE_VALUE_SIZE );
     write_binary_unsigned_int( file, node->frequency_, COMPACT_TRIE_FREQUENCY_SIZE );
-
     write_binary_unsigned_int( file, 0, COMPACT_TRIE_CHILDREN_OFFSET_SIZE );
-
-    write_binary_unsigned_int( file, calculate_list_size( root_node_->children_ ), COMPACT_TRIE_N_CHILDREN_SIZE );
+    write_binary_unsigned_int( file, calculate_list_size( node->children_ ), COMPACT_TRIE_N_CHILDREN_SIZE );
 
     children = children->next_;
+  }
+}
+
+void CompactTrie::load_mmap( const std::string& filename )
+{
+  unsigned int file_size = filesize( filename.c_str() );
+  int fd = open( filename.c_str(), O_RDONLY );
+  file_mmap_ = mmap(0, file_size, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0 );
+}
+
+void CompactTrie::print_words( void )
+{
+  print_words_aux( root_node_, std::string() );
+}
+
+void CompactTrie::print_words_aux( const CompactTrieNode* node, std::string word )
+{
+  if ( node->children_ == nullptr )
+    std::cout << word << std::endl;
+
+  CompactTrieNodeList* children = node->children_;
+  while( children != nullptr )
+  {
+    print_words_aux( children->node_ , word + children->node_->value_ );
+    children = children->next_;
+  }
+}
+
+void CompactTrie::print_words_mmap( void )
+{
+  unsigned int n_children = read_binary_unsigned_int_void_ptr( file_mmap_, COMPACT_TRIE_N_CHILDREN_SIZE );
+  unsigned int offset = COMPACT_TRIE_N_CHILDREN_SIZE;
+  for ( unsigned int i = 0; i < n_children; ++i )
+  {
+    print_words_mmap_aux( offset, std::string() );
+    offset += COMPACT_TRIE_NODE_SIZE;
+  }
+}
+
+void CompactTrie::print_words_mmap_aux( unsigned int offset, std::string word )
+{
+  //std::cout << "print_words_mmap_aux , offset : " << offset << " , word : " << word << std::endl;
+
+  unsigned int value = read_binary_unsigned_int_void_ptr( offset_void_pointer(file_mmap_, offset), COMPACT_TRIE_VALUE_SIZE );
+  offset += COMPACT_TRIE_VALUE_SIZE;
+  unsigned int frequency = read_binary_unsigned_int_void_ptr( offset_void_pointer(file_mmap_, offset), COMPACT_TRIE_FREQUENCY_SIZE );
+  offset += COMPACT_TRIE_FREQUENCY_SIZE;
+  unsigned int children_offset = read_binary_unsigned_int_void_ptr( offset_void_pointer(file_mmap_, offset), COMPACT_TRIE_CHILDREN_OFFSET_SIZE );
+  offset += COMPACT_TRIE_CHILDREN_OFFSET_SIZE;
+  unsigned int n_children = read_binary_unsigned_int_void_ptr( offset_void_pointer(file_mmap_, offset), COMPACT_TRIE_N_CHILDREN_SIZE );
+  offset += COMPACT_TRIE_N_CHILDREN_SIZE;
+
+  //std::cout << "value : " << value << " , frequency : " << frequency << " , children_offset : " << children_offset << " , n_children : " << n_children << std::endl;
+
+  if ( n_children == 0 )
+    std::cout << word + (char)value << std::endl;
+  else
+  {
+    for ( unsigned int i = 0; i < n_children; ++i )
+    {
+      print_words_mmap_aux( children_offset + i*COMPACT_TRIE_NODE_SIZE, word + (char)value );
+    }
   }
 }
 
@@ -124,7 +184,7 @@ CompactTrieNode* add_child_node( CompactTrieNode* parent, char value )
 
   CompactTrieNode* child = find_node( parent->children_, value );
   if ( child == nullptr )
-    return insert_node_lower_bound( parent->children_, value );
+    return append_node( parent->children_, value );
   return child;
 }
 
@@ -183,20 +243,22 @@ CompactTrieNode* insert_node_lower_bound( CompactTrieNodeList* list, char value 
   }
   else
   {
-    while ( list->next_ != nullptr && list->next_->node_->value_ < value )
-      list = list->next_;
 
-    CompactTrieNodeList* new_list = new CompactTrieNodeList();
-    new_list->next_ = list->next_;
-    list->next_ = new_list;
+      while ( list->next_ != nullptr && list->next_->node_->value_ < value )
+        list = list->next_;
 
-    CompactTrieNode* node = new CompactTrieNode();
-    node->value_ = value;
+      CompactTrieNodeList* new_list = new CompactTrieNodeList();
+      new_list->next_ = list->next_;
+      list->next_ = new_list;
 
-    new_list->node_ = node;
+      CompactTrieNode* node = new CompactTrieNode();
+      node->value_ = value;
 
-    return node;
-  }
+      new_list->node_ = node;
+
+      return node;
+    }
+
 }
 
 unsigned int calculate_list_size( CompactTrieNodeList* list )

@@ -32,6 +32,8 @@ int main(int argc, char** argv)
     iter = words_iterator.get_next();
     delete iter_cpy;
   }
+
+  //trie.print_words();
   //std::cout << "finished adding words" << std::endl;
   //std::cout << "saving file" << std::endl;
   trie.serialise( cmd_line_args.path_to_dict_ );
