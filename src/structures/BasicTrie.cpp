@@ -133,7 +133,7 @@ void BasicTrie::load_mmap( const std::string& filename )
 
   unsigned int n_children = read_binary_unsigned_int_void_ptr(file_mmap, 4);
   std::cout << "n_children : " << n_children << std::endl;
-  
+
 }
 
 
