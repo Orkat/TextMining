@@ -147,7 +147,7 @@ void CompactTrie::load_mmap( const std::string& filename )
 {
   unsigned int file_size = filesize( filename.c_str() );
   int fd = open( filename.c_str(), O_RDONLY );
-  file_mmap_ = mmap(0, file_size, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0 );
+  file_mmap_ = mmap(0, file_size, PROT_READ, MAP_PRIVATE, fd, 0 );
 }
 
 void CompactTrie::print_words( void )

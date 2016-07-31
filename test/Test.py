@@ -27,7 +27,7 @@ class TestClass:
         self.out_path = join(dirname(abspath(__file__)), 'output')
         self.in_path = join(dirname(abspath(__file__)), 'input')
 
-        self.generate_dicts()
+        #self.generate_dicts()
         self.test(categories)
 
     def generate_dicts(self):
@@ -55,19 +55,21 @@ class TestClass:
             dev_null = open(devnull, 'w')
             cat = Popen(('cat', join(self.in_path, category)), stdout=PIPE)
             t1 = time.time()
-            p1 = Popen([self.ref_app_path, self.ref_dict_path], stdin=cat.stdout, stdout=PIPE, stderr=dev_null)
+            p1 = Popen([self.ref_app_path, self.ref_dict_path], stdin=cat.stdout, stdout=PIPE)#, stderr=dev_null)
             t2 = time.time()
             ref_out_json = p1.communicate()[0]
 
             cat = Popen(('cat', join(self.in_path, category)), stdout=PIPE)
             t3 = time.time()
-            p2 = Popen([self.bin_app_path, self.bin_dict_path], stdin=cat.stdout, stdout=PIPE, stderr=dev_null)
+            p2 = Popen([self.bin_app_path, self.bin_dict_path], stdin=cat.stdout, stdout=PIPE)#, stderr=dev_null)
             t4 = time.time()
             bin_out_json = p2.communicate()[0]
             dev_null.close()
 
             diff = difflib.ndiff(ref_out_json, bin_out_json)
-            if diff:
+            #delta = ''.join(diff)
+            if diff is not None:
+                #print delta
                 print '\r' + '[' + str(index) + '] ' + TestClass.FAIL + "FAILED - Output Difference - " + TestClass.END + category
             else:
                 if t4 - t3 > t2 - t1:
