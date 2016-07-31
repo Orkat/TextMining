@@ -71,8 +71,8 @@ int main(int argc, char** argv)
     for ( unsigned int i = 0; i < dl_words.size(); ++i )
     {
       auto word = dl_words[i];
-      std::cout << "{\"word\":\"" << std::get<0>(word) << ",\"freq\":" << std::get<1>(word) << ",\"distance\":";
-      std::cout << std::get<2>(word) << "}";
+      std::cout << "{\"word\":\"" << std::get<0>(word) << "\",\"freq\":" << std::get<2>(word) << ",\"distance\":";
+      std::cout << std::get<1>(word) << "}";
       if ( i < dl_words.size() - 1 )
         std::cout << ",";
     }

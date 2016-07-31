@@ -33,7 +33,7 @@ struct less_than_dl_word
       return true;
     else if ( std::get<1>( lhs ) == std::get<1>( rhs ) )
     {
-      if ( std::get<2>( lhs ) < std::get<2>( rhs ) )
+      if ( std::get<2>( lhs ) > std::get<2>( rhs ) )
         return true;
       else if ( std::get<2>( lhs ) == std::get<2>( rhs ) )
       {
