@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <fcntl.h>
+#include <cmath>
 
 CompactTrie::CompactTrie()
 {
@@ -15,7 +16,6 @@ CompactTrie::CompactTrie()
 
 void CompactTrie::add_word( const std::string& word, unsigned int frequency )
 {
-  //std::cout << word << std::endl;
   if ( root_node_ == nullptr )
   {
     root_node_ = new CompactTrieNode();
@@ -114,15 +114,24 @@ std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::g
   unsigned int current_distance = damerau_levenshtein_distance(current_word.c_str(), word.c_str());
   std::vector<std::tuple<std::string, unsigned int, unsigned int> > ret;
 
-  if ( n_children == 0 )
+  unsigned int length_diff = std::abs( (int)current_word.size() - (int)word.size() );
+
+  //std::cout << "length_diff : " << length_diff << std::endl;
+  //std::cout << "word : " << word << " , current_word : " << current_word << std::endl;
+
+  /*
+  if ( length_diff < distance && current_distance > distance )
+    return ret;
+  */
+
+  if ( n_children == 0 || frequency != 0 )
   {
     if ( current_distance <= distance )
       ret.push_back( std::make_tuple( current_word, current_distance, frequency ) );
   }
-  else
+
+  if ( n_children > 0 )
   {
-    if ( frequency != 0 && current_distance <= distance )
-      ret.push_back( std::make_tuple( current_word, current_distance, frequency ) );
     for ( unsigned int i = 0; i < n_children; ++i )
     {
       auto vect = get_dlwords_aux( children_offset + i*COMPACT_TRIE_NODE_SIZE, current_word, word, distance );
@@ -147,7 +156,7 @@ void CompactTrie::print_words( void )
 
 void CompactTrie::print_words_aux( const CompactTrieNode* node, std::string word )
 {
-  if ( node->children_ == nullptr )
+  if ( node->children_ == nullptr || node->frequency_ != 0 )
     std::cout << word << std::endl;
 
   CompactTrieNodeList* children = node->children_;
@@ -184,14 +193,13 @@ void CompactTrie::print_words_mmap_aux( unsigned int offset, std::string word )
 
   //std::cout << "value : " << value << " , frequency : " << frequency << " , children_offset : " << children_offset << " , n_children : " << n_children << std::endl;
 
-  if ( n_children == 0 )
+  if ( n_children == 0 || frequency != 0 )
     std::cout << word + (char)value << std::endl;
-  else
+
+  if ( n_children > 0 )
   {
     for ( unsigned int i = 0; i < n_children; ++i )
-    {
       print_words_mmap_aux( children_offset + i*COMPACT_TRIE_NODE_SIZE, word + (char)value );
-    }
   }
 }
 
