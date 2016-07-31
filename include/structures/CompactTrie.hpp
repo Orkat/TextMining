@@ -27,6 +27,14 @@ struct CompactTrieNodeList
   need to be loaded in its entirety. Instead, it mmaps the corresponding
   file and navigates its structure. Also, the compilation phase of the
   structure uses far less memory than BasicTrie.
+
+  However, the nodes do not contain in RAM the offsets of their children,
+  since this causes the program to exceed 512MB. Instead, these offset
+  values are calculated dynamically during the serialisation phase.
+  The serialisation function maintains an offset counter that it
+  increments while writing the corresponding values of each node, and
+  then fseeks back to the parent node to correct the offset value once
+  this value becomes known.
 */
 class CompactTrie
 {
