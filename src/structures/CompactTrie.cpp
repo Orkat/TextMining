@@ -91,14 +91,14 @@ std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::g
   unsigned int offset = COMPACT_TRIE_N_CHILDREN_SIZE;
   for ( unsigned int i = 0; i < n_children; ++i )
   {
-    auto vect = get_dlwords_aux( offset, std::string(), word, distance );
+    auto vect = get_dlwords_aux( offset, std::string(), word, distance, std::string() + word[0] );
     ret.insert( ret.end(), vect.begin(), vect.end() );
     offset += COMPACT_TRIE_NODE_SIZE;
   }
   return ret;
 }
 
-std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::get_dlwords_aux( unsigned int offset, std::string current_word, std::string word, unsigned int distance )
+std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::get_dlwords_aux( unsigned int offset, std::string current_word, std::string word, unsigned int distance, std::string word_partial )
 {
   unsigned int value = read_binary_unsigned_int_void_ptr( offset_void_pointer(file_mmap_, offset), COMPACT_TRIE_VALUE_SIZE );
   offset += COMPACT_TRIE_VALUE_SIZE;
@@ -112,17 +112,15 @@ std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::g
   current_word += (char)value;
 
   unsigned int current_distance = damerau_levenshtein_distance(current_word.c_str(), word.c_str());
+  unsigned int current_distance_partial = damerau_levenshtein_distance(current_word.c_str(), word_partial.c_str());
+
   std::vector<std::tuple<std::string, unsigned int, unsigned int> > ret;
 
   unsigned int length_diff = std::abs( (int)current_word.size() - (int)word.size() );
 
-  //std::cout << "length_diff : " << length_diff << std::endl;
-  //std::cout << "word : " << word << " , current_word : " << current_word << std::endl;
-
-  /*
-  if ( length_diff < distance && current_distance > distance )
+  if ( current_distance_partial > distance + 1 )
     return ret;
-  */
+
 
   if ( n_children == 0 || frequency != 0 )
   {
@@ -134,7 +132,10 @@ std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::g
   {
     for ( unsigned int i = 0; i < n_children; ++i )
     {
-      auto vect = get_dlwords_aux( children_offset + i*COMPACT_TRIE_NODE_SIZE, current_word, word, distance );
+      std::string new_word_partial = word_partial;
+      if ( word_partial.size() < word.size() )
+        new_word_partial += word[current_word.size()];
+      auto vect = get_dlwords_aux( children_offset + i*COMPACT_TRIE_NODE_SIZE, current_word, word, distance, new_word_partial );
       ret.insert(ret.end(), vect.begin(), vect.end());
     }
   }
