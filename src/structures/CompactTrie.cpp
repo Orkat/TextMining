@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <fcntl.h>
+#include <cmath>
 
 CompactTrie::CompactTrie()
 {
@@ -15,7 +16,6 @@ CompactTrie::CompactTrie()
 
 void CompactTrie::add_word( const std::string& word, unsigned int frequency )
 {
-  //std::cout << word << std::endl;
   if ( root_node_ == nullptr )
   {
     root_node_ = new CompactTrieNode();
@@ -91,14 +91,14 @@ std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::g
   unsigned int offset = COMPACT_TRIE_N_CHILDREN_SIZE;
   for ( unsigned int i = 0; i < n_children; ++i )
   {
-    auto vect = get_dlwords_aux( offset, std::string(), word, distance );
+    auto vect = get_dlwords_aux( offset, std::string(), word, distance, std::string() + word[0] );
     ret.insert( ret.end(), vect.begin(), vect.end() );
     offset += COMPACT_TRIE_NODE_SIZE;
   }
   return ret;
 }
 
-std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::get_dlwords_aux( unsigned int offset, std::string current_word, std::string word, unsigned int distance )
+std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::get_dlwords_aux( unsigned int offset, std::string current_word, std::string word, unsigned int distance, std::string word_partial )
 {
   unsigned int value = read_binary_unsigned_int_void_ptr( offset_void_pointer(file_mmap_, offset), COMPACT_TRIE_VALUE_SIZE );
   offset += COMPACT_TRIE_VALUE_SIZE;
@@ -112,20 +112,30 @@ std::vector<std::tuple<std::string, unsigned int, unsigned int> > CompactTrie::g
   current_word += (char)value;
 
   unsigned int current_distance = damerau_levenshtein_distance(current_word.c_str(), word.c_str());
+  unsigned int current_distance_partial = damerau_levenshtein_distance(current_word.c_str(), word_partial.c_str());
+
   std::vector<std::tuple<std::string, unsigned int, unsigned int> > ret;
 
-  if ( n_children == 0 )
+  unsigned int length_diff = std::abs( (int)current_word.size() - (int)word.size() );
+
+  if ( current_distance_partial > distance + 1 )
+    return ret;
+
+
+  if ( n_children == 0 || frequency != 0 )
   {
     if ( current_distance <= distance )
       ret.push_back( std::make_tuple( current_word, current_distance, frequency ) );
   }
-  else
+
+  if ( n_children > 0 )
   {
-    if ( frequency != 0 && current_distance <= distance )
-      ret.push_back( std::make_tuple( current_word, current_distance, frequency ) );
     for ( unsigned int i = 0; i < n_children; ++i )
     {
-      auto vect = get_dlwords_aux( children_offset + i*COMPACT_TRIE_NODE_SIZE, current_word, word, distance );
+      std::string new_word_partial = word_partial;
+      if ( word_partial.size() < word.size() )
+        new_word_partial += word[current_word.size()];
+      auto vect = get_dlwords_aux( children_offset + i*COMPACT_TRIE_NODE_SIZE, current_word, word, distance, new_word_partial );
       ret.insert(ret.end(), vect.begin(), vect.end());
     }
   }
@@ -137,7 +147,7 @@ void CompactTrie::load_mmap( const std::string& filename )
 {
   unsigned int file_size = filesize( filename.c_str() );
   int fd = open( filename.c_str(), O_RDONLY );
-  file_mmap_ = mmap(0, file_size, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0 );
+  file_mmap_ = mmap(0, file_size, PROT_READ, MAP_PRIVATE, fd, 0 );
 }
 
 void CompactTrie::print_words( void )
@@ -147,7 +157,7 @@ void CompactTrie::print_words( void )
 
 void CompactTrie::print_words_aux( const CompactTrieNode* node, std::string word )
 {
-  if ( node->children_ == nullptr )
+  if ( node->children_ == nullptr || node->frequency_ != 0 )
     std::cout << word << std::endl;
 
   CompactTrieNodeList* children = node->children_;
@@ -184,14 +194,13 @@ void CompactTrie::print_words_mmap_aux( unsigned int offset, std::string word )
 
   //std::cout << "value : " << value << " , frequency : " << frequency << " , children_offset : " << children_offset << " , n_children : " << n_children << std::endl;
 
-  if ( n_children == 0 )
+  if ( n_children == 0 || frequency != 0 )
     std::cout << word + (char)value << std::endl;
-  else
+
+  if ( n_children > 0 )
   {
     for ( unsigned int i = 0; i < n_children; ++i )
-    {
       print_words_mmap_aux( children_offset + i*COMPACT_TRIE_NODE_SIZE, word + (char)value );
-    }
   }
 }
 

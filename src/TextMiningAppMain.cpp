@@ -14,6 +14,7 @@ int main(int argc, char** argv)
   CompactTrie trie;
 
   trie.load_mmap( cmd_line_args.path_to_dict_ );
+  //trie.print_words_mmap();
 
   /*
   std::string str1 = "hello";

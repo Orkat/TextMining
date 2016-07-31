@@ -45,7 +45,7 @@ class CompactTrie
     void print_words_aux( const CompactTrieNode* node, std::string word );
     void print_words_mmap_aux( unsigned int offset, std::string word );
     std::vector<std::tuple<std::string, unsigned int, unsigned int> > get_dlwords_aux( unsigned int offset, std::string current_word, std::string word,
-                                              unsigned int distance );
+                                              unsigned int distance, std::string word_partial );
 
 };
 
