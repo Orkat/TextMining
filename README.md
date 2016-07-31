@@ -11,6 +11,15 @@ Questions:
    Nous avions au départ voulu faire un Patricia Trie pour ce projet. Or, nous nous sommes heurtés à des difficultés de structure, notamment en ce qui concerne la longueur des strings. Ainsi, nous sommes revenus sur une implémentation de Trie plus classique.
 
 2. Listez l’ensemble des tests effectués sur votre programme (en plus des units tests)
+    
+    Nous n'avons pas réalisé de tests unitaires pour des briques spécifiques de ce projet.
+    Toutefois nous avons construit une suite de test qui teste chacune des fonctionnalités
+    de la correction.
+    Celle-ci choisi des mots au hasard dans le dictionnaire en effectuant toutes les modification
+    possibles, ainsi que des mots aléatoires; puis compare les corrections obtenues à celle du
+    programme de référence.
+    Son lancement est possible à partir du répertoire "test/" en executant python2 main.py -g
+    lorsque "words.txt" réside à la racine, et les binaires de référence dans "/ref".
 
 
 3. Avez-vous détecté des cas où la correction par distance ne fonctionnait pas (même avec une distance élevée) ?
