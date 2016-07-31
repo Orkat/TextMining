@@ -18,3 +18,5 @@ std::ifstream::pos_type filesize(const char* filename);
 void* offset_void_pointer( void* ptr, unsigned int offset );
 
 void print_file_hex(const char* filename, unsigned int n_bytes);
+
+unsigned int damerau_levenshtein_distance( const char* str1, const char* str2 );

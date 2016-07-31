@@ -84,6 +84,53 @@ void CompactTrie::serialise_children_list( std::ofstream& file, const CompactTri
   }
 }
 
+std::vector<std::string> CompactTrie::get_dlwords(std::string word, unsigned int distance)
+{
+  std::vector<std::string> ret;
+  unsigned int n_children = read_binary_unsigned_int_void_ptr( file_mmap_, COMPACT_TRIE_N_CHILDREN_SIZE );
+  unsigned int offset = COMPACT_TRIE_N_CHILDREN_SIZE;
+  for ( unsigned int i = 0; i < n_children; ++i )
+  {
+    auto vect = get_dlwords_aux( offset, std::string(), word, distance );
+    ret.insert( ret.end(), vect.begin(), vect.end() );
+    offset += COMPACT_TRIE_NODE_SIZE;
+  }
+  return ret;
+}
+
+std::vector<std::string> CompactTrie::get_dlwords_aux( unsigned int offset, std::string current_word, std::string word, unsigned int distance )
+{
+  unsigned int value = read_binary_unsigned_int_void_ptr( offset_void_pointer(file_mmap_, offset), COMPACT_TRIE_VALUE_SIZE );
+  offset += COMPACT_TRIE_VALUE_SIZE;
+  unsigned int frequency = read_binary_unsigned_int_void_ptr( offset_void_pointer(file_mmap_, offset), COMPACT_TRIE_FREQUENCY_SIZE );
+  offset += COMPACT_TRIE_FREQUENCY_SIZE;
+  unsigned int children_offset = read_binary_unsigned_int_void_ptr( offset_void_pointer(file_mmap_, offset), COMPACT_TRIE_CHILDREN_OFFSET_SIZE );
+  offset += COMPACT_TRIE_CHILDREN_OFFSET_SIZE;
+  unsigned int n_children = read_binary_unsigned_int_void_ptr( offset_void_pointer(file_mmap_, offset), COMPACT_TRIE_N_CHILDREN_SIZE );
+  offset += COMPACT_TRIE_N_CHILDREN_SIZE;
+
+  unsigned int current_distance = damerau_levenshtein_distance(current_word.c_str(), word.c_str());
+  std::vector<std::string> ret;
+
+  if ( n_children == 0 )
+  {
+    if ( current_distance <= distance )
+      ret.push_back( current_word );
+  }
+  else
+  {
+    if ( frequency != 0 && current_distance <= distance )
+      ret.push_back( current_word );
+    for ( unsigned int i = 0; i < n_children; ++i )
+    {
+      auto vect = get_dlwords_aux( children_offset + i*COMPACT_TRIE_NODE_SIZE, current_word + (char)value, word, distance );
+      ret.insert(ret.end(), vect.begin(), vect.end());
+    }
+  }
+
+  return ret;
+}
+
 void CompactTrie::load_mmap( const std::string& filename )
 {
   unsigned int file_size = filesize( filename.c_str() );
@@ -207,7 +254,7 @@ CompactTrieNode* append_node( CompactTrieNodeList* list, char value )
   {
     CompactTrieNode* node = new CompactTrieNode();
     node->value_ = value;
-
+    node->frequency_ = 0;
     list->node_ = node;
 
     return node;
@@ -236,7 +283,7 @@ CompactTrieNode* insert_node_lower_bound( CompactTrieNodeList* list, char value 
   {
     CompactTrieNode* node = new CompactTrieNode();
     node->value_ = value;
-
+    node->frequency_ = 0;
     list->node_ = node;
 
     return node;

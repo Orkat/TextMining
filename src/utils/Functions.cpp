@@ -1,6 +1,10 @@
 #include "utils/Functions.hpp"
 
 #include <iomanip>
+#include <stdio.h>
+#include <algorithm>
+#include <cstring>
+#include <iostream>
 
 unsigned int next_power_of_2( const unsigned int val )
 {
@@ -98,4 +102,76 @@ void print_file_hex(const char* filename, unsigned int n_bytes)
     i += 1;
   }
   std::cout << std::endl;
+}
+
+/*
+int DamerauLevenshteinDistance(char str1[1..lenStr1], char str2[1..lenStr2])
+  // d is a table with lenStr1+1 rows and lenStr2+1 columns
+  declare int d[0..lenStr1, 0..lenStr2]
+  // i and j are used to iterate over str1 and str2
+  declare int i, j, cost
+
+  for i from 0 to lenStr1
+      d[i, 0] := i
+  for j from 0 to lenStr2
+      d[0, j] := j
+
+  for i from 1 to lenStr1
+      for j from 1 to lenStr2
+          if str1[i-1] = str2[j-1] then cost := 0
+                               else cost := 1
+          d[i, j] := minimum(
+                               d[i-1, j  ] + 1,     // deletion
+                               d[i  , j-1] + 1,     // insertion
+                               d[i-1, j-1] + cost   // substitution
+                           )
+          if(i > 1 and j > 1 and str1[i-1] = str2[j-2] and str1[i-2] = str2[j-1]) then
+              d[i, j] := minimum(
+                               d[i, j],
+                               d[i-2, j-2] + 1      // transposition
+                            )
+
+
+  return d[lenStr1, lenStr2]
+*/
+
+unsigned int damerau_levenshtein_distance( const char* str1, const char* str2 )
+{
+  unsigned int len1 = std::strlen(str1);
+  unsigned int len2 = std::strlen(str2);
+
+  unsigned int** d = new unsigned int*[len1+1];
+  for ( unsigned int i = 0; i < len1+1; ++i )
+    d[i] = new unsigned int[len2+1];
+
+  int cost = 0;
+
+  for ( unsigned int i = 0; i < len1+1; ++i )
+    d[i][0] = i;
+  for ( unsigned int j = 0; j < len2+1; ++j )
+    d[0][j] = j;
+
+  for ( unsigned int i = 1; i < len1+1; ++i )
+  {
+    for ( unsigned int j = 1; j < len2+1; ++j )
+    {
+      if ( str1[i-1] == str2[j-1] )
+        cost = 0;
+      else
+        cost = 1;
+
+      d[i][j] = std::min( d[i-1][j] + 1, std::min(d[i][j-1] + 1, d[i-1][j-1] + cost ));
+
+      if ( i > 1 && j > 1 && str1[i-1] == str2[j-2] && str1[i-2] == str2[j-1] )
+        d[i][j] = std::min( d[i][j], d[i-2][j-2] + 1 );
+    }
+  }
+
+  unsigned int value = d[len1][len2];
+  for ( unsigned int i = 0 ; i < len1 + 1; ++i )
+    delete d[i];
+
+  delete d;
+
+  return value;
 }
