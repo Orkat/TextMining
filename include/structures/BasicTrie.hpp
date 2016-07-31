@@ -4,6 +4,13 @@
 #include <fstream>
 #include <sys/mman.h>
 
+/*
+  This is a basic implementation of the Trie structure.
+  The class generates the tree structure by inserting words.
+  Once finished, the trie can be serialised.
+  In order to test the structure, it first has to be loaded
+  in its entirety.
+*/
 class BasicTrie
 {
   public:

@@ -14,14 +14,6 @@ int main(int argc, char** argv)
   CompactTrie trie;
 
   trie.load_mmap( cmd_line_args.path_to_dict_ );
-  //trie.print_words_mmap();
-
-  /*
-  std::string str1 = "hello";
-  auto dl_words = trie.get_dlwords( str1, 1 );
-  for ( auto word : dl_words )
-    std::cout << std::get<0>(word) << " " << std::get<1>(word) << " " << std::get<2>(word) << std::endl;
-  */
 
   std::vector<std::string> lines;
 
