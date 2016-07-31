@@ -11,7 +11,7 @@ Questions:
    Nous avions au départ voulu faire un Patricia Trie pour ce projet. Or, nous nous sommes heurtés à des difficultés de structure, notamment en ce qui concerne la longueur des strings. Ainsi, nous sommes revenus sur une implémentation de Trie plus classique.
 
 2. Listez l’ensemble des tests effectués sur votre programme (en plus des units tests)
-    
+
     Nous n'avons pas réalisé de tests unitaires pour des briques spécifiques de ce projet.
     Toutefois nous avons construit une suite de test qui teste chacune des fonctionnalités
     de la correction.
@@ -66,3 +66,6 @@ Questions:
    système de reconnaissance de la parole. Par exemple, sur les vidéos YouTube,
    des sous-titres sont générés à partir des vidéos. Cette génération des
    sous-titres est couteuse et exécutée en parallèle sur plusieurs serveurs.
+
+
+Pour compiler le projet : "mkdir build && cd build && cmake .. && make"
