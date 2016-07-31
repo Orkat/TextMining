@@ -104,37 +104,6 @@ void print_file_hex(const char* filename, unsigned int n_bytes)
   std::cout << std::endl;
 }
 
-/*
-int DamerauLevenshteinDistance(char str1[1..lenStr1], char str2[1..lenStr2])
-  // d is a table with lenStr1+1 rows and lenStr2+1 columns
-  declare int d[0..lenStr1, 0..lenStr2]
-  // i and j are used to iterate over str1 and str2
-  declare int i, j, cost
-
-  for i from 0 to lenStr1
-      d[i, 0] := i
-  for j from 0 to lenStr2
-      d[0, j] := j
-
-  for i from 1 to lenStr1
-      for j from 1 to lenStr2
-          if str1[i-1] = str2[j-1] then cost := 0
-                               else cost := 1
-          d[i, j] := minimum(
-                               d[i-1, j  ] + 1,     // deletion
-                               d[i  , j-1] + 1,     // insertion
-                               d[i-1, j-1] + cost   // substitution
-                           )
-          if(i > 1 and j > 1 and str1[i-1] = str2[j-2] and str1[i-2] = str2[j-1]) then
-              d[i, j] := minimum(
-                               d[i, j],
-                               d[i-2, j-2] + 1      // transposition
-                            )
-
-
-  return d[lenStr1, lenStr2]
-*/
-
 unsigned int damerau_levenshtein_distance( const char* str1, const char* str2 )
 {
   unsigned int len1 = std::strlen(str1);
@@ -174,4 +143,9 @@ unsigned int damerau_levenshtein_distance( const char* str1, const char* str2 )
   delete d;
 
   return value;
+}
+
+void sort_dl_words( std::vector<std::tuple<std::string, unsigned int, unsigned int> >& dl_words )
+{
+  std::sort( dl_words.begin(), dl_words.end(), less_than_dl_word() );
 }

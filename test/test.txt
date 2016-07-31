@@ -1,0 +1,5 @@
+approx 2 one
+approx 1 cat
+approx 3 tree
+approx 2 house
+approx 1 hello\n approx 1 door
